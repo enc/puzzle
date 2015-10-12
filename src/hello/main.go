@@ -18,12 +18,17 @@ func NewServer() *Server {
 }
 
 func (s *Server) Respond(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
 	content := struct {
 		Language string
 		Method   string
+		PostVar  string
+		Post     bool
 	}{
 		r.Header.Get("Accept-Language")[:5],
-		"GET",
+		r.Method,
+		r.Form.Get("postVar"),
+		r.Method == "POST",
 	}
 	tmpl.Execute(w, content)
 }
@@ -33,5 +38,8 @@ var tmpl = template.Must(template.New("tmpl").Parse(`
   <h2>Hello Visitor</h2>
   <p>Your language is: {{.Language}}</p>
   <p>You sent a: {{.Method}}</p>
+  {{if .Post}}
+  <p>Your POST variable value: {{.PostVar}}
+  {{end}}
 </center></body></html>
 `))

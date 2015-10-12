@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -28,4 +29,19 @@ func TestGetRequest(t *testing.T) {
 		t.Fatalf("Expected language and method in body, got: %q\n", body)
 	}
 
+}
+
+func TestPostRequest(t *testing.T) {
+	formString := []byte("postVar=HalloWorld")
+
+	s := NewServer()
+	request, _ := http.NewRequest("POST", "/", bytes.NewBuffer(formString))
+	request.Header.Set("Accept-Language", "en-US,en;q=0.8,de-DE;q=0.6,en;q=0.4")
+	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	response := httptest.NewRecorder()
+	s.Respond(response, request)
+	if body := response.Body.String(); !strings.Contains(body, "Your POST variable value: HalloWorld") ||
+		!strings.Contains(body, "You sent a: POST") {
+		t.Fatalf("Missing post message. Got: %q\n", body)
+	}
 }
