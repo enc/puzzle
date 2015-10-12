@@ -45,3 +45,13 @@ func TestPostRequest(t *testing.T) {
 		t.Fatalf("Missing post message. Got: %q\n", body)
 	}
 }
+
+func TestPutRequest(t *testing.T) {
+	s := NewServer()
+	request, _ := http.NewRequest("PUT", "/", nil)
+	response := httptest.NewRecorder()
+	s.Respond(response, request)
+	if response.Code != http.StatusMethodNotAllowed {
+		t.Fatalf("Expected StatusCode 405 but got: %d\n", response.Code)
+	}
+}

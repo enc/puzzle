@@ -18,19 +18,23 @@ func NewServer() *Server {
 }
 
 func (s *Server) Respond(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	content := struct {
-		Language string
-		Method   string
-		PostVar  string
-		Post     bool
-	}{
-		r.Header.Get("Accept-Language")[:5],
-		r.Method,
-		r.Form.Get("postVar"),
-		r.Method == "POST",
+	if !(r.Method == "GET" || r.Method == "POST") {
+		http.Error(w, "This Method is not supported.", http.StatusMethodNotAllowed)
+	} else {
+		r.ParseForm()
+		content := struct {
+			Language string
+			Method   string
+			PostVar  string
+			Post     bool
+		}{
+			r.Header.Get("Accept-Language")[:5],
+			r.Method,
+			r.Form.Get("postVar"),
+			r.Method == "POST",
+		}
+		tmpl.Execute(w, content)
 	}
-	tmpl.Execute(w, content)
 }
 
 var tmpl = template.Must(template.New("tmpl").Parse(`
