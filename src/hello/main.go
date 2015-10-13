@@ -19,6 +19,7 @@ func NewServer() *Server {
 	return &Server{}
 }
 
+// this is actually not a server function but belongs into the context
 func (s *Server) ParseLanguage(languageString string) string {
 	language := "Not Available"
 	if len(languageString) >= 2 {
@@ -28,6 +29,7 @@ func (s *Server) ParseLanguage(languageString string) string {
 }
 
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	// return errors early on simple issues
 	if !(r.Method == "GET" || r.Method == "POST") {
 		http.Error(w, "This Method is not supported.", http.StatusMethodNotAllowed)
 		return
@@ -36,6 +38,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
+
+	// start proper processing
 	r.ParseForm()
 	postVar := r.Form.Get("postVar")
 	if len(postVar) > 0 || r.Method == "GET" {
@@ -62,6 +66,7 @@ var errTmpl = `<!DOCTYPE html><html><body><center>
   <p>You have forgotten the postVar.</p>
 </center></body></html>
 `
+
 var tmpl = template.Must(template.New("tmpl").Parse(`
 <!DOCTYPE html><html><body><center>
   <h2>Hello Visitor</h2>

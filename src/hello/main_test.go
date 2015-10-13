@@ -102,7 +102,6 @@ func TestLanguageParsing(t *testing.T) {
 
 	s := NewServer()
 	for _, test := range tests {
-
 		if out := s.ParseLanguage(test.ls); test.out != out {
 			t.Fatalf("Parsed %s and expected %s but got: %s\n", test.ls, test.out, out)
 		}
