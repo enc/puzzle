@@ -22,18 +22,23 @@ func (s *Server) Respond(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "This Method is not supported.", http.StatusMethodNotAllowed)
 	} else {
 		r.ParseForm()
-		content := struct {
-			Language string
-			Method   string
-			PostVar  string
-			Post     bool
-		}{
-			r.Header.Get("Accept-Language")[:5],
-			r.Method,
-			r.Form.Get("postVar"),
-			r.Method == "POST",
+		postVar := r.Form.Get("postVar")
+		if len(postVar) > 0 || r.Method == "GET" {
+			content := struct {
+				Language string
+				Method   string
+				PostVar  string
+				Post     bool
+			}{
+				r.Header.Get("Accept-Language")[:2],
+				r.Method,
+				postVar,
+				r.Method == "POST",
+			}
+			tmpl.Execute(w, content)
+		} else {
+			http.Error(w, "Parameter postVar is required.", 400)
 		}
-		tmpl.Execute(w, content)
 	}
 }
 
