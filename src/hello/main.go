@@ -19,6 +19,14 @@ func NewServer() *Server {
 	return &Server{}
 }
 
+func (s *Server) ParseLanguage(languageString string) string {
+	language := "Not Available"
+	if len(languageString) >= 2 {
+		language = languageString[:2]
+	}
+	return language
+}
+
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if !(r.Method == "GET" || r.Method == "POST") {
 		http.Error(w, "This Method is not supported.", http.StatusMethodNotAllowed)
@@ -37,7 +45,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			PostVar  string
 			Post     bool
 		}{
-			r.Header.Get("Accept-Language")[:2],
+			s.ParseLanguage(r.Header.Get("Accept-Language")),
 			r.Method,
 			postVar,
 			r.Method == "POST",

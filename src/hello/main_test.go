@@ -30,6 +30,17 @@ func TestGetRequest(t *testing.T) {
 	}
 
 }
+func TestLanguageNotSet(t *testing.T) {
+	s := NewServer()
+
+	request, _ := http.NewRequest("GET", "/", nil)
+	response := httptest.NewRecorder()
+	s.ServeHTTP(response, request)
+	if body := response.Body.String(); !strings.Contains(body, "Your language is: Not Available") ||
+		!strings.Contains(body, "You sent a: GET") {
+		t.Fatalf("Expected language and method in body, got: %q\n", body)
+	}
+}
 
 func TestPostRequest(t *testing.T) {
 	formString := []byte("postVar=HalloWorld")
@@ -75,5 +86,25 @@ func TestPutRequest(t *testing.T) {
 	s.ServeHTTP(response, request)
 	if response.Code != http.StatusMethodNotAllowed {
 		t.Fatalf("Expected StatusCode 405 but got: %d\n", response.Code)
+	}
+}
+
+func TestLanguageParsing(t *testing.T) {
+	var tests = []struct {
+		ls  string
+		out string
+	}{
+		{"", "Not Available"},
+		{"en-US,en;q=0.8,de-DE;q=0.6,en;q=0.4", "en"},
+		{"de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4", "de"},
+		{"fr, de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4", "fr"},
+	}
+
+	s := NewServer()
+	for _, test := range tests {
+
+		if out := s.ParseLanguage(test.ls); test.out != out {
+			t.Fatalf("Parsed %s and expected %s but got: %s\n", test.ls, test.out, out)
+		}
 	}
 }
