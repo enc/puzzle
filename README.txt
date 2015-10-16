@@ -6,9 +6,7 @@ The Server type is just an empty shell to implement the helper
 and give the code a little structure, since even starting the server requires
 the main package to start.
 
-The code is pretty generic in most parts. I learned a lot from the
-awesome examples published by a lot of notable people in the go community.
-Notably Andrew Gerrand in this case. I really enjoyed their videos coding in pairs. 
+The code is pretty generic in most parts, which is my pragmatic aproach. The pragmatism of Go is what I really enjoy.
 
 Language
 --------
